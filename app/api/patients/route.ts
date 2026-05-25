@@ -1,6 +1,14 @@
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
+
+function getAdminClient() {
+  return createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 const patientSchema = z.object({
   first_name: z.string().min(1),
@@ -66,7 +74,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: firstError || 'Datos inválidos' }, { status: 400 })
   }
 
-  const { data, error } = await supabase
+  // Use admin client to bypass RLS for INSERT (auth already verified above)
+  const admin = getAdminClient()
+  const { data, error } = await admin
     .from('patients')
     .insert({ ...parsed.data, dentist_id: user.id })
     .select()
