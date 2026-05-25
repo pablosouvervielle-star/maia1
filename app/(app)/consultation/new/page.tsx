@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+import { Loader2, MessageSquarePlus, UserPlus, Brain } from 'lucide-react'
 
 interface Patient {
   id: string
@@ -42,7 +42,7 @@ export default function NewConsultationPage() {
 
   async function startConsultation() {
     if (!selectedPatientId) {
-      toast.error('Please select a patient')
+      toast.error('Selecciona un paciente primero')
       return
     }
     setCreating(true)
@@ -59,7 +59,7 @@ export default function NewConsultationPage() {
       if (!res.ok) throw new Error(data.error)
       setConsultation(data.consultation)
     } catch (err) {
-      toast.error(`Failed to start consultation: ${(err as Error).message}`)
+      toast.error(`Error al iniciar consulta: ${(err as Error).message}`)
     } finally {
       setCreating(false)
     }
@@ -71,15 +71,16 @@ export default function NewConsultationPage() {
     return (
       <div className="flex flex-col h-screen">
         <TopBar
-          title="AI Consultation"
+          title="Consulta con IA"
           subtitle={`${selectedPatient.first_name} ${selectedPatient.last_name}`}
           actions={
             <Button
               variant="outline"
               size="sm"
+              className="rounded-xl"
               onClick={() => router.push(`/consultation/${consultation.id}`)}
             >
-              Save & Close
+              Guardar y Cerrar
             </Button>
           }
         />
@@ -92,28 +93,42 @@ export default function NewConsultationPage() {
 
   return (
     <div className="flex flex-col h-screen">
-      <TopBar title="New Consultation" />
+      <TopBar title="Nueva Consulta" />
       <div className="flex flex-1 items-center justify-center p-8">
         <div className="w-full max-w-md space-y-6">
-          <div>
-            <h2 className="text-xl font-semibold">Start Consultation</h2>
+
+          {/* Header */}
+          <div className="text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl mx-auto mb-4"
+              style={{ background: 'linear-gradient(135deg, #6366f1, #818cf8)', boxShadow: '0 0 24px rgba(99,102,241,0.4)' }}>
+              <Brain className="h-7 w-7 text-white" />
+            </div>
+            <h2 className="text-2xl font-black tracking-tight">Iniciar Consulta</h2>
             <p className="text-sm text-muted-foreground mt-1">
-              Select a patient to begin the AI-assisted diagnostic session.
+              Selecciona un paciente para comenzar la sesión diagnóstica con IA.
             </p>
           </div>
 
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Patient</Label>
+          <div className="rounded-2xl p-5 space-y-4"
+            style={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Paciente
+              </Label>
               {loadingPatients ? (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Loading patients...
+                  Cargando pacientes...
+                </div>
+              ) : patients.length === 0 ? (
+                <div className="text-sm text-muted-foreground py-2">
+                  No hay pacientes registrados.
                 </div>
               ) : (
-                <Select value={selectedPatientId} onValueChange={(v) => setSelectedPatientId(v ?? "")}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select patient..." />
+                <Select value={selectedPatientId} onValueChange={(v) => setSelectedPatientId(v ?? '')}>
+                  <SelectTrigger className="rounded-xl h-11">
+                    <SelectValue placeholder="Seleccionar paciente..." />
                   </SelectTrigger>
                   <SelectContent>
                     {patients.map((p) => (
@@ -126,33 +141,41 @@ export default function NewConsultationPage() {
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="complaint">Chief Complaint (optional)</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="complaint" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Motivo de Consulta (opcional)
+              </Label>
               <Input
                 id="complaint"
-                placeholder="e.g. Toothache upper right, cold sensitivity..."
+                placeholder="Ej. Dolor en molar superior derecho, sensibilidad al frío..."
                 value={chiefComplaint}
                 onChange={(e) => setChiefComplaint(e.target.value)}
+                className="rounded-xl h-11"
+                onKeyDown={(e) => e.key === 'Enter' && startConsultation()}
               />
             </div>
 
             <Button
-              className="w-full"
+              className="w-full h-11 rounded-xl font-bold"
               onClick={startConsultation}
               disabled={!selectedPatientId || creating}
+              style={{ background: 'linear-gradient(135deg, #6366f1, #818cf8)', border: 'none' }}
             >
-              {creating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Begin Consultation
-            </Button>
-
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => router.push('/patients/new')}
-            >
-              + Register New Patient
+              {creating
+                ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Iniciando...</>
+                : <><MessageSquarePlus className="mr-2 h-4 w-4" /> Iniciar Consulta con IA</>
+              }
             </Button>
           </div>
+
+          <Button
+            variant="outline"
+            className="w-full h-11 rounded-xl"
+            onClick={() => router.push('/patients/new')}
+          >
+            <UserPlus className="mr-2 h-4 w-4" />
+            Registrar Nuevo Paciente
+          </Button>
         </div>
       </div>
     </div>

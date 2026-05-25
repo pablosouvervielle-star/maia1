@@ -1,6 +1,14 @@
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
+
+function getAdminClient() {
+  return createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 const consultationSchema = z.object({
   patient_id: z.string().uuid(),
@@ -16,7 +24,8 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const patientId = searchParams.get('patient_id')
 
-  let query = supabase
+  const admin = getAdminClient()
+  let query = admin
     .from('consultations')
     .select('*, patients(first_name, last_name)')
     .eq('dentist_id', user.id)
@@ -39,14 +48,16 @@ export async function POST(request: Request) {
   const body = await request.json()
   const parsed = consultationSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+    const firstError = Object.values(parsed.error.flatten().fieldErrors).flat()[0]
+    return NextResponse.json({ error: firstError || 'Datos inválidos' }, { status: 400 })
   }
 
   const now = new Date()
   const title = parsed.data.title ||
-    `Visit — ${now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
+    `Consulta — ${now.toLocaleDateString('es-MX', { month: 'long', day: 'numeric', year: 'numeric' })}`
 
-  const { data, error } = await supabase
+  const admin = getAdminClient()
+  const { data, error } = await admin
     .from('consultations')
     .insert({
       ...parsed.data,

@@ -1,5 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+
+function getAdminClient() {
+  return createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 import { getAnthropicClient, DENTAL_MODEL } from '@/lib/anthropic/client'
 import {
   DENTAL_SYSTEM_PROMPT,
@@ -24,8 +32,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'consultationId and message are required' }, { status: 400 })
   }
 
+  const admin = getAdminClient()
+
   // Fetch consultation + patient context
-  const { data: consultation, error: consultationError } = await supabase
+  const { data: consultation, error: consultationError } = await admin
     .from('consultations')
     .select(`
       id, chief_complaint, patient_id,
@@ -66,7 +76,7 @@ export async function POST(request: Request) {
   }
 
   // Fetch recent chat history (last 20 messages to manage context window)
-  const { data: chatMessages } = await supabase
+  const { data: chatMessages } = await admin
     .from('chat_messages')
     .select('role, content')
     .eq('consultation_id', consultationId)
@@ -86,7 +96,7 @@ export async function POST(request: Request) {
   const messages = buildDentalMessages(patientContext, chatHistory, message, encodedImages)
 
   // Save user message to DB
-  await supabase.from('chat_messages').insert({
+  await admin.from('chat_messages').insert({
     consultation_id: consultationId,
     role: 'user',
     content: message,
@@ -125,7 +135,7 @@ export async function POST(request: Request) {
         const diagnosisData = extractDiagnosisFromText(fullResponse)
 
         // Save assistant message
-        const { data: savedMessage } = await supabase
+        const { data: savedMessage } = await admin
           .from('chat_messages')
           .insert({
             consultation_id: consultationId,
@@ -137,7 +147,7 @@ export async function POST(request: Request) {
 
         // Save structured diagnosis if found
         if (diagnosisData) {
-          await supabase.from('diagnoses').upsert(
+          await admin.from('diagnoses').upsert(
             {
               consultation_id: consultationId,
               patient_id: consultation.patient_id,
