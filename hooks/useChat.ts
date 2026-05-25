@@ -85,6 +85,13 @@ export function useChat({ consultationId, initialMessages = [] }: UseChatOptions
             try {
               const data = JSON.parse(line.slice(6))
 
+              if (data.error) {
+                toast.error(`Error IA: ${data.error}`)
+                setMessages((prev) => prev.filter((msg) => msg.id !== streamingId))
+                setIsStreaming(false)
+                return
+              }
+
               if (data.text) {
                 accumulatedText += data.text
                 const displayText = stripJsonBlock(accumulatedText)

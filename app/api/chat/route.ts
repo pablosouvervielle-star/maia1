@@ -180,7 +180,10 @@ export async function POST(request: Request) {
         )
         controller.close()
       } catch (error) {
-        controller.error(error)
+        const errMsg = error instanceof Error ? error.message : String(error)
+        console.error('[chat/route] stream error:', errMsg)
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: errMsg })}\n\n`))
+        controller.close()
       }
     },
   })
