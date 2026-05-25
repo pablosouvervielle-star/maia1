@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { TopBar } from '@/components/layout/TopBar'
 import { StatsCards } from '@/components/dashboard/StatsCards'
 import { buttonVariants } from '@/components/ui/button'
@@ -16,10 +17,15 @@ export default async function DashboardPage() {
 
   if (!user) return null
 
+  const admin = createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
   const [profileResult, statsResult, recentResult] = await Promise.all([
-    supabase.from('profiles').select('full_name, email').eq('id', user.id).single(),
-    supabase.rpc('get_dentist_stats', { p_dentist_id: user.id }),
-    supabase
+    admin.from('profiles').select('full_name, email').eq('id', user.id).single(),
+    admin.rpc('get_dentist_stats', { p_dentist_id: user.id }),
+    admin
       .from('consultations')
       .select('id, title, created_at, status, patients(first_name, last_name)')
       .eq('dentist_id', user.id)

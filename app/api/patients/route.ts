@@ -38,7 +38,8 @@ export async function GET(request: Request) {
   const limit = parseInt(searchParams.get('limit') || '20')
   const offset = (page - 1) * limit
 
-  let query = supabase
+  const admin = getAdminClient()
+  let query = admin
     .from('patients')
     .select('*', { count: 'exact' })
     .eq('dentist_id', user.id)

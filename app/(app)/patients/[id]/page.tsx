@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
 import { TopBar } from '@/components/layout/TopBar'
 import { buttonVariants } from '@/components/ui/button'
@@ -17,7 +18,12 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
 
-  const { data: patient } = await supabase
+  const admin = createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
+  const { data: patient } = await admin
     .from('patients')
     .select(`
       *,
@@ -52,11 +58,12 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
     <div className="flex flex-col h-screen">
       <TopBar
         title={`${patient.first_name} ${patient.last_name}`}
-        subtitle={age !== null ? `${age} years old` : undefined}
+        subtitle={age !== null ? `${age} años` : undefined}
         actions={
-          <Link href={`/consultation/new?patient_id=${id}`} className={cn(buttonVariants({ size: 'sm' }))}>
+          <Link href={`/consultation/new?patient_id=${id}`} className={cn(buttonVariants({ size: 'sm' }))}
+            style={{ background: 'linear-gradient(135deg, #6366f1, #818cf8)', border: 'none' }}>
             <MessageSquarePlus className="mr-2 h-4 w-4" />
-            New Consultation
+            Nueva Consulta
           </Link>
         }
       />
@@ -67,8 +74,8 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
           <div className="flex flex-wrap gap-4 items-start">
             <div className="flex-1">
               <div className="flex flex-wrap gap-2">
-                {age !== null && <Badge variant="secondary">{age} yrs</Badge>}
-                {patient.gender && <Badge variant="outline" className="capitalize">{patient.gender}</Badge>}
+                {age !== null && <Badge variant="secondary">{age} años</Badge>}
+                {patient.gender && <Badge variant="outline" className="capitalize">{patient.gender === 'male' ? 'Masculino' : patient.gender === 'female' ? 'Femenino' : 'Otro'}</Badge>}
                 {patient.blood_type && <Badge variant="outline">{patient.blood_type}</Badge>}
               </div>
               <div className="flex flex-wrap gap-4 mt-3 text-sm text-muted-foreground">
@@ -90,9 +97,9 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
 
           <Tabs defaultValue="overview">
             <TabsList>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="odontogram">Odontogram</TabsTrigger>
-              <TabsTrigger value="history">Consultations ({consultations.length})</TabsTrigger>
+              <TabsTrigger value="overview">Resumen</TabsTrigger>
+              <TabsTrigger value="odontogram">Odontograma</TabsTrigger>
+              <TabsTrigger value="history">Consultas ({consultations.length})</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="mt-4 space-y-4">
@@ -100,11 +107,11 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
                 {/* Medical History */}
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm">Medical History</CardTitle>
+                    <CardTitle className="text-sm">Historia Médica</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3 text-sm">
                     <div>
-                      <p className="text-xs font-medium text-muted-foreground mb-1">Conditions</p>
+                      <p className="text-xs font-medium text-muted-foreground mb-1">Condiciones</p>
                       {mh?.conditions?.length ? (
                         <div className="flex flex-wrap gap-1">
                           {mh.conditions.map((c) => (
@@ -112,11 +119,11 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
                           ))}
                         </div>
                       ) : (
-                        <p className="text-xs text-muted-foreground">None reported</p>
+                        <p className="text-xs text-muted-foreground">Ninguna reportada</p>
                       )}
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-muted-foreground mb-1">Medications</p>
+                      <p className="text-xs font-medium text-muted-foreground mb-1">Medicamentos</p>
                       {mh?.medications?.length ? (
                         <div className="flex flex-wrap gap-1">
                           {mh.medications.map((m) => (
@@ -124,11 +131,11 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
                           ))}
                         </div>
                       ) : (
-                        <p className="text-xs text-muted-foreground">None</p>
+                        <p className="text-xs text-muted-foreground">Ninguno</p>
                       )}
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-muted-foreground mb-1">Allergies</p>
+                      <p className="text-xs font-medium text-muted-foreground mb-1">Alergias</p>
                       {mh?.allergies?.length ? (
                         <div className="flex flex-wrap gap-1">
                           {mh.allergies.map((a) => (
@@ -136,7 +143,7 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
                           ))}
                         </div>
                       ) : (
-                        <p className="text-xs text-muted-foreground">NKDA</p>
+                        <p className="text-xs text-muted-foreground">Sin alergias conocidas</p>
                       )}
                     </div>
                   </CardContent>
@@ -145,11 +152,11 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
                 {/* Notes */}
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm">Clinical Notes</CardTitle>
+                    <CardTitle className="text-sm">Notas Clínicas</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground">
-                      {patient.notes || 'No notes recorded.'}
+                      {patient.notes || 'Sin notas registradas.'}
                     </p>
                   </CardContent>
                 </Card>
@@ -159,7 +166,7 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
             <TabsContent value="odontogram" className="mt-4">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm">Dental Chart (FDI)</CardTitle>
+                  <CardTitle className="text-sm">Odontograma FDI</CardTitle>
                 </CardHeader>
                 <CardContent className="overflow-x-auto">
                   <OdontogramTab patientId={id} initialOdontogram={patient.odontogram || {}} />
@@ -171,7 +178,7 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
               <div className="space-y-3">
                 {consultations.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-8">
-                    No consultations yet.
+                    Sin consultas aún.
                   </p>
                 ) : (
                   consultations.map((c: {

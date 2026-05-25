@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { TopBar } from '@/components/layout/TopBar'
 import { buttonVariants } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -21,7 +22,12 @@ export default async function PatientsPage({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
 
-  let query = supabase
+  const admin = createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
+  let query = admin
     .from('patients')
     .select('*', { count: 'exact' })
     .eq('dentist_id', user.id)
