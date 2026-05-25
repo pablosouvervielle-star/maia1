@@ -60,7 +60,7 @@ export function Sidebar() {
           const isActive = pathname === href || pathname.startsWith(href + '/')
           return collapsed ? (
             <Tooltip key={href}>
-              <TooltipTrigger asChild>
+              <TooltipTrigger>
                 <Link
                   href={href}
                   className={cn(
