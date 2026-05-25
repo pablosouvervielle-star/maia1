@@ -13,4 +13,4 @@ export function getAnthropicClient(): Anthropic {
   return _client
 }
 
-export const DENTAL_MODEL = 'claude-opus-4-6'
+export const DENTAL_MODEL = 'claude-opus-4-5'
