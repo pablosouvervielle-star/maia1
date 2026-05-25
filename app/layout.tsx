@@ -1,25 +1,20 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/layout/ThemeProvider'
 import { Toaster } from 'sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { ReactQueryProvider } from '@/components/layout/ReactQueryProvider'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const inter = Inter({
+  variable: '--font-inter',
   subsets: ['latin'],
-})
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
 })
 
 export const metadata: Metadata = {
-  title: 'MAIA — Clinical Intelligence for Dentistry',
-  description:
-    'AI-powered dental diagnosis, clinical records, and research platform for odontologists.',
+  title: 'MAIA — Inteligencia Clínica Dental',
+  description: 'Plataforma de diagnóstico dental con IA, historial clínico e investigación para odontólogos.',
 }
 
 export default function RootLayout({
@@ -28,8 +23,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="es" suppressHydrationWarning>
+      <body className={`${inter.variable} antialiased font-sans`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <ReactQueryProvider>
             <TooltipProvider>

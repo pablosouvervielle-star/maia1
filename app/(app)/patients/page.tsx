@@ -67,7 +67,7 @@ export default async function PatientsPage({
         }
       />
 
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-6 animate-fade-in">
         {/* Search */}
         <form method="get" className="mb-6">
           <input
@@ -99,7 +99,7 @@ export default async function PatientsPage({
             )}
           </div>
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 stagger-children">
             {patients.map((patient, i) => {
               const age = patient.date_of_birth
                 ? Math.floor(
