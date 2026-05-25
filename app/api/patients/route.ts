@@ -55,9 +55,15 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await request.json()
+  // Strip empty strings from optional fields before validation
+  if (body.gender === '') delete body.gender
+  if (body.email === '') delete body.email
+  if (body.date_of_birth === '') delete body.date_of_birth
+
   const parsed = patientSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+    const firstError = Object.values(parsed.error.flatten().fieldErrors).flat()[0]
+    return NextResponse.json({ error: firstError || 'Datos inválidos' }, { status: 400 })
   }
 
   const { data, error } = await supabase

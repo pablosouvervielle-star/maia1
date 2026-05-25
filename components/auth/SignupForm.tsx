@@ -35,14 +35,16 @@ export function SignupForm() {
       return
     }
 
-    toast.success('Account created! Check your email to verify your account.')
+    toast.success('¡Cuenta creada! Revisa tu correo para verificar tu cuenta.')
     router.push('/login')
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="fullName">Full Name</Label>
+      <div className="space-y-1.5">
+        <Label htmlFor="fullName" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Nombre Completo
+        </Label>
         <Input
           id="fullName"
           type="text"
@@ -50,36 +52,48 @@ export function SignupForm() {
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
           required
+          className="rounded-xl h-11"
         />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+      <div className="space-y-1.5">
+        <Label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Correo Electrónico
+        </Label>
         <Input
           id="email"
           type="email"
-          placeholder="dr.garcia@clinic.com"
+          placeholder="dr.garcia@clinica.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
           autoComplete="email"
+          className="rounded-xl h-11"
         />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+      <div className="space-y-1.5">
+        <Label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Contraseña
+        </Label>
         <Input
           id="password"
           type="password"
-          placeholder="Min. 8 characters"
+          placeholder="Mínimo 8 caracteres"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
           minLength={8}
           autoComplete="new-password"
+          className="rounded-xl h-11"
         />
       </div>
-      <Button type="submit" className="w-full" disabled={loading}>
+      <Button
+        type="submit"
+        className="w-full h-11 rounded-xl font-bold"
+        disabled={loading}
+        style={{ background: 'linear-gradient(135deg, #6366f1, #818cf8)', border: 'none' }}
+      >
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        Create Account
+        Crear Cuenta
       </Button>
     </form>
   )

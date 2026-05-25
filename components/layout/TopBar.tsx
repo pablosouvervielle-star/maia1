@@ -55,7 +55,7 @@ export function TopBar({ title, subtitle, actions, userInitials = 'D', userEmail
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium">My Account</p>
+                <p className="text-sm font-medium">Mi Cuenta</p>
                 {userEmail && (
                   <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
                 )}
@@ -64,12 +64,12 @@ export function TopBar({ title, subtitle, actions, userInitials = 'D', userEmail
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => router.push('/settings')}>
               <User className="mr-2 h-4 w-4" />
-              Profile Settings
+              Configuración
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
               <LogOut className="mr-2 h-4 w-4" />
-              Sign Out
+              Cerrar Sesión
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -5,16 +5,16 @@ export default function SignupPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Create your account</h1>
+        <h1 className="text-3xl font-black tracking-tight">Crear tu cuenta</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Join MAIA — for licensed dental professionals
+          Únete a MAIA — exclusivo para profesionales odontológicos
         </p>
       </div>
       <SignupForm />
       <p className="text-center text-sm text-muted-foreground">
-        Already have an account?{' '}
-        <Link href="/login" className="font-medium text-primary hover:underline">
-          Sign in
+        ¿Ya tienes cuenta?{' '}
+        <Link href="/login" className="font-semibold text-primary hover:underline">
+          Iniciar sesión
         </Link>
       </p>
     </div>

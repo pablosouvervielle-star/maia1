@@ -19,10 +19,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/patients', label: 'Patients', icon: Users },
-  { href: '/consultation/new', label: 'New Consultation', icon: MessageSquarePlus },
-  { href: '/research', label: 'Research', icon: FlaskConical },
-  { href: '/settings', label: 'Settings', icon: Settings },
+  { href: '/patients', label: 'Pacientes', icon: Users },
+  { href: '/consultation/new', label: 'Nueva Consulta', icon: MessageSquarePlus },
+  { href: '/research', label: 'Investigación', icon: FlaskConical },
+  { href: '/settings', label: 'Configuración', icon: Settings },
 ]
 
 export function Sidebar() {
@@ -32,37 +32,47 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        'flex flex-col border-r border-border bg-card transition-all duration-300 ease-in-out',
+        'flex flex-col transition-all duration-300 ease-in-out',
         collapsed ? 'w-16' : 'w-64'
       )}
+      style={{
+        background: 'linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%)',
+        borderRight: '1px solid rgba(129,140,248,0.15)',
+      }}
     >
       {/* Logo */}
-      <div className="flex h-16 items-center border-b border-border px-4">
-        <div className="flex items-center gap-2 overflow-hidden">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary">
-            <Stethoscope className="h-4 w-4 text-primary-foreground" />
+      <div className="flex h-16 items-center border-b px-4"
+        style={{ borderColor: 'rgba(129,140,248,0.15)' }}>
+        <div className="flex items-center gap-3 overflow-hidden">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+            style={{ background: 'linear-gradient(135deg, #6366f1, #818cf8)', boxShadow: '0 0 20px rgba(99,102,241,0.4)' }}>
+            <Stethoscope className="h-4 w-4 text-white" />
           </div>
           {!collapsed && (
-            <span className="text-lg font-bold tracking-tight">MAIA</span>
+            <span className="text-xl font-black tracking-widest text-white">MAIA</span>
           )}
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex flex-1 flex-col gap-1 p-2">
+      <nav className="flex flex-1 flex-col gap-1 p-3">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const isActive = pathname === href || pathname.startsWith(href + '/')
           return collapsed ? (
             <Tooltip key={href}>
-              <TooltipTrigger>
+              <TooltipTrigger asChild>
                 <Link
                   href={href}
                   className={cn(
-                    'flex h-10 w-10 items-center justify-center rounded-md transition-colors',
+                    'flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200',
                     isActive
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                      ? 'text-white shadow-lg'
+                      : 'text-indigo-300/60 hover:text-indigo-200 hover:bg-indigo-500/10'
                   )}
+                  style={isActive ? {
+                    background: 'linear-gradient(135deg, #6366f1, #818cf8)',
+                    boxShadow: '0 0 16px rgba(99,102,241,0.4)',
+                  } : {}}
                 >
                   <Icon className="h-5 w-5" />
                 </Link>
@@ -74,11 +84,15 @@ export function Sidebar() {
               key={href}
               href={href}
               className={cn(
-                'flex h-10 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors',
+                'flex h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-all duration-200',
                 isActive
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  ? 'text-white shadow-lg'
+                  : 'text-indigo-300/60 hover:text-indigo-200 hover:bg-indigo-500/10'
               )}
+              style={isActive ? {
+                background: 'linear-gradient(135deg, #6366f1, #818cf8)',
+                boxShadow: '0 0 16px rgba(99,102,241,0.3)',
+              } : {}}
             >
               <Icon className="h-5 w-5 shrink-0" />
               <span>{label}</span>
@@ -88,11 +102,11 @@ export function Sidebar() {
       </nav>
 
       {/* Collapse toggle */}
-      <div className="border-t border-border p-2">
+      <div className="border-t p-2" style={{ borderColor: 'rgba(129,140,248,0.15)' }}>
         <Button
           variant="ghost"
           size="sm"
-          className="w-full justify-center"
+          className="w-full justify-center text-indigo-300/50 hover:text-indigo-200 hover:bg-indigo-500/10"
           onClick={() => setCollapsed(!collapsed)}
         >
           {collapsed ? (
