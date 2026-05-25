@@ -1,13 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-
-function getAdminClient() {
-  return createAdminClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-}
 import { getAnthropicClient, DENTAL_MODEL } from '@/lib/anthropic/client'
 import {
   DENTAL_SYSTEM_PROMPT,
@@ -18,6 +11,13 @@ import {
 } from '@/lib/anthropic/dental-prompt'
 import { encodeImagesForAI } from '@/lib/anthropic/image-encoder'
 import { differenceInYears, parseISO } from 'date-fns'
+
+function getAdminClient() {
+  return createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 export const maxDuration = 120
 
